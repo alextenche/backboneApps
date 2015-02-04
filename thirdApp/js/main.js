@@ -1,81 +1,88 @@
 (function(){
 
-window.secondApp = {
+window.thirdApp = {
 	Models: {},
 	Collections: {},
 	Views: {}
 };
-
 
 window.template = function(id){
 	return _.template( $('#' + id).html() );
 }
 
 
-// Person Model
-secondApp.Models.Person = Backbone.Model.extend({
-	defaults:{
-		name: 'John',
-		age: 30,
-		occupation: 'worker'
-	}
+thirdApp.Models.Task = Backbone.Model.extend({});
+
+
+thirdApp.Collections.Tasks = Backbone.Collection.extend({
+	model: thirdApp.Models.Task
 });
 
 
-// Collection
-secondApp.Collections.People = Backbone.Collection.extend({
-	model: secondApp.Models.Person
-});
-
-
-// View for all people
-secondApp.Views.People = Backbone.View.extend({
+thirdApp.Views.Tasks = Backbone.View.extend({
 	tagName: 'ul',
 
 	render: function(){
-		this.collection.each(function(person){
-			var personView = new secondApp.Views.Person({ model:person });
-			this.$el.append(personView.render().el);
-		}, this);
+		this.collection.each(this.addOne, this);
 		return this;
-	}
+	},
 
+	addOne: function(task){
+		// creating a new child view
+		var taskView = new thirdApp.Views.Task({ model: task });
+		taskView.render();
+
+		// append to the root element
+		this.$el.append(taskView.el);
+	}
 });
 
 
-// View for a person
-secondApp.Views.Person = Backbone.View.extend({
-	tagName : 'li',
 
-	template: template('personTemplate'),
+thirdApp.Views.Task = Backbone.View.extend({
+	tagName: 'li',
+
+	template: template('taskTemplate'),
+
+	events: {
+		'click .edit': 'editTask'
+	},
+
+	editTask: function(){
+		var newTaskTitle = prompt('What would you like to change the text to?', this.model.get('title'));
+		this.model.set('title', newTaskTitle);
+	},
 
 	render: function(){
-		this.$el.html( this.template(this.model.toJSON()));
+		var template = this.template( this.model.toJSON());
+		this.$el.html( template );
 		return this;
 	}
 });
 
-
-peopleCollection = new secondApp.Collections.People([
+var tasksCollection = new thirdApp.Collections.Tasks([
 	{
-		name: 'Alex Tenche',
-		age: 36
+		title: 'go to the store',
+		priority: 4
 	},
 	{
-		name: 'Blade Daywalker',
-		age: 43,
-		occupation: 'vampire slayer'
+		title: 'go to the mall',
+		priority: 3
 	},
 	{
-		name: 'Lucy',
-		age: 35,
-		occupation: '100% brain usage'
+		title: 'go to work',
+		priority: 5
 	}
 ]);
 
-var peopleView = new secondApp.Views.People({ collection: peopleCollection });
-$(document.body).append(peopleView.render().el);
+var tasksView = new thirdApp.Views.Tasks({ collection: tasksCollection });
+tasksView.render();
 
-console.log(secondApp.Collections);
+$('.tasks').html(tasksView.render().el);
+
+
+
+
+
 
 })();
