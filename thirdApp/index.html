@@ -7,6 +7,12 @@
 <body>
 
 	<h1>My Tasks</h1>
+
+	<form id="addTask" action="">
+		<input type="text" placeholder="your new task">
+		<input type="submit" value="add task">
+	</form>
+
 	<div class="tasks">
 		<script id="taskTemplate" type="text/template">
 			<span><%= title %></span> <button class="edit">Edit</button> <button class="delete">Delete</button>

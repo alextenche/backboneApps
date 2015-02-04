@@ -11,7 +11,15 @@ window.template = function(id){
 }
 
 
-thirdApp.Models.Task = Backbone.Model.extend({});
+thirdApp.Models.Task = Backbone.Model.extend({
+	validate: function(){
+		if(!attrs.title){
+			return 'a task requires a valid title';
+		}
+	}
+
+
+});
 
 
 thirdApp.Collections.Tasks = Backbone.Collection.extend({
@@ -21,6 +29,10 @@ thirdApp.Collections.Tasks = Backbone.Collection.extend({
 
 thirdApp.Views.Tasks = Backbone.View.extend({
 	tagName: 'ul',
+
+	initialize: function(){
+		this.collection.on('add', this.addOne, this);
+	},
 
 	render: function(){
 		this.collection.each(this.addOne, this);
@@ -44,13 +56,31 @@ thirdApp.Views.Task = Backbone.View.extend({
 
 	template: template('taskTemplate'),
 
+	initialize: function(){
+		this.model.on('change', this.render, this);
+		this.model.on('destroy', this.remove, this);
+	},
+
 	events: {
-		'click .edit': 'editTask'
+		'click .edit': 'editTask',
+		'click .delete': 'deleteTask'
 	},
 
 	editTask: function(){
 		var newTaskTitle = prompt('What would you like to change the text to?', this.model.get('title'));
+
+		if(! $.trim(newTaskTitle) ) return;
+
 		this.model.set('title', newTaskTitle);
+	},
+
+	deleteTask: function(){
+		this.model.destroy();
+		console.log(tasksCollection);
+	},
+
+	remove: function(){
+		this.$el.remove();
 	},
 
 	render: function(){
@@ -60,7 +90,28 @@ thirdApp.Views.Task = Backbone.View.extend({
 	}
 });
 
-var tasksCollection = new thirdApp.Collections.Tasks([
+
+thirdApp.Views.AddTask = Backbone.View.extend({
+	el: '#addTask',
+
+	events:{
+		'submit': 'submit'
+	},
+
+	initialize: function(){},
+
+	submit: function(event){
+		event.preventDefault();
+
+		var newTaskTitle = $(event.currentTarget).find('input[type=text]').val();
+
+		var task = new thirdApp.Models.Task({ title:newTaskTitle });
+		this.collection.add(task);
+	}
+});
+
+
+window.tasksCollection = new thirdApp.Collections.Tasks([
 	{
 		title: 'go to the store',
 		priority: 4
@@ -75,14 +126,10 @@ var tasksCollection = new thirdApp.Collections.Tasks([
 	}
 ]);
 
+var addTaskView = new thirdApp.Views.AddTask({ collection: tasksCollection })
+
 var tasksView = new thirdApp.Views.Tasks({ collection: tasksCollection });
-tasksView.render();
-
 $('.tasks').html(tasksView.render().el);
-
-
-
-
 
 
 })();
