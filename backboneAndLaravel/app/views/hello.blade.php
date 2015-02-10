@@ -5,11 +5,11 @@
 </head>
 <body>
 
-	<h1>Hello World!</h1>
+	<h1>Hello World!!!</h1>
 
-	<script type="js/lib/jquery.js"></script>
-	<script type="js/lib/underscore.js"></script>
-	<script type="js/lib/backbone.js"></script>
+	<script src="js/libs/jquery.js"></script>
+	<script src="js/libs/underscore.js"></script>
+	<script src="js/libs/backbone.js"></script>
 
 	<script>
 	(function(){
@@ -18,10 +18,16 @@
 			Views: {},
 			Collections:{}
 		};
+
 		App.Models.Task = Backbone.Model.extend({
-			
+			defaults: {
+				title: '',
+				completed: 0,
+				id: ''
+			},
+			urlRoot: 'tasks'	
 		});
-	});
+	})();
 	</script>
 
 </body>

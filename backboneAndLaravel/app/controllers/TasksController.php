@@ -1,6 +1,6 @@
 <?php
 
-class TasksController extends \BaseController {
+class TasksController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
@@ -43,7 +43,7 @@ class TasksController extends \BaseController {
 	 */
 	public function show($id)
 	{
-		//
+		return Task::find($id);
 	}
 
 
@@ -67,7 +67,12 @@ class TasksController extends \BaseController {
 	 */
 	public function update($id)
 	{
-		//
+		$input = Input::json()->all();
+		$task = Task::find($id);
+
+		$task->title = $input['title'];
+		$task->completed = $input['completed'];
+		$task->save();
 	}
 
 
