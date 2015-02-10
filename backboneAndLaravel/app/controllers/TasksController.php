@@ -31,7 +31,12 @@ class TasksController extends Controller {
 	 */
 	public function store()
 	{
-		//
+		$input = Input::json()->all();
+		
+		return Task::create(array(
+			'title' => $input['title'],
+			'completed' => $input['completed']
+		));
 	}
 
 
@@ -84,7 +89,8 @@ class TasksController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		//
+		$task = Task::find($id)->delete();
+
 	}
 
 
